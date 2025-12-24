@@ -1,13 +1,20 @@
 package com.aaron.data.repository
 
+import com.aaron.data.util.Constant.QUESTIONS_COLLECTION_NAME
 import com.aaron.domain.model.QuizQuestion
 import com.aaron.domain.repository.QuizQuestionRepository
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 
-class QuizQuestionRepositoryImpl: QuizQuestionRepository {
+class QuizQuestionRepositoryImpl(
+    mongoDatabase: MongoDatabase
+): QuizQuestionRepository {
+
+    val quizQuestionCollection = mongoDatabase
+        .getCollection<QuizQuestion>(QUESTIONS_COLLECTION_NAME)
 
     val quizQuestions = mutableListOf<QuizQuestion>()
 
-    override fun getAllQuizQuestions(
+    override suspend fun getAllQuizQuestions(
         topicCode: Int?,
         limit: Int?
     ): List<QuizQuestion> {
@@ -21,16 +28,16 @@ class QuizQuestionRepositoryImpl: QuizQuestionRepository {
         }
     }
 
-    override fun getQuizQuestionById(id: String?): QuizQuestion? {
+    override suspend fun getQuizQuestionById(id: String?): QuizQuestion? {
         return quizQuestions.find { it.id == id }
     }
 
-    override fun upsertQuizQuestion(question: QuizQuestion) {
-        quizQuestions.add(question)
+    override suspend fun upsertQuizQuestion(question: QuizQuestion) {
+        quizQuestionCollection.insertOne(question)
 
     }
 
-    override fun deleteQuizQuestionsById(id: String): Boolean {
+    override suspend fun deleteQuizQuestionsById(id: String): Boolean {
         return quizQuestions.removeIf { it.id == id }
 
     }

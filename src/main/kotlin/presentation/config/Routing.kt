@@ -1,5 +1,6 @@
 package com.aaron.presentation.config
 
+import com.aaron.data.database.DatabaseFactory
 import com.aaron.data.repository.QuizQuestionRepositoryImpl
 import com.aaron.domain.repository.QuizQuestionRepository
 import com.aaron.presentation.routes.quiz_questions.deleteQuizQuestionsById
@@ -12,7 +13,9 @@ import io.ktor.server.routing.routing
 
 fun Application.configureRouting(){
 
-    val quizQuestionRepository: QuizQuestionRepository = QuizQuestionRepositoryImpl()
+    val mongoDatabase = DatabaseFactory.create()
+
+    val quizQuestionRepository: QuizQuestionRepository = QuizQuestionRepositoryImpl(mongoDatabase)
 
     routing {
 
